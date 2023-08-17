@@ -63,7 +63,7 @@ def upload_file():
                 ])
                 image = load_image_from_file(file, transform=data_transforms)
 
-                model_1, model_2 = load_models("E:/Kidney_US/US_data/flask/resnet50.pt", "E:/Kidney_US/US_data/flask/resnext50_32x4d.pt")
+                model_1, model_2 = load_models("resnet50.pt", "resnext50_32x4d.pt")
                 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
                 inputs = image.unsqueeze(0).to(device)
                 outputs = ensemble_prediction(model_1, model_2, inputs)
