@@ -1,0 +1,2 @@
+resnet50.pt filter=lfs diff=lfs merge=lfs -text
+resnext50_32x4d.pt filter=lfs diff=lfs merge=lfs -text
