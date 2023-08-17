@@ -1,5 +1,5 @@
-
-
+pip install --upgrade pip && pip install -r requirements.txt
+gunicorn --bind 0.0.0.0:5000 wsgi:app
 
 1. Artefact: This label refers to ultrasound images where unwanted artifacts are present, affecting the overall image quality. Artifacts can result from various factors, such as acoustic shadows, reverberations, or other distortions. In the context of kidney ultrasound images, these artifacts may hinder proper assessment of the kidney's structure and function.
 

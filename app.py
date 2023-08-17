@@ -23,6 +23,9 @@ app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png', 'gif'}
 app.jinja_env.globals.update(zip=zip)
 
+app.secret_key = 'super secret key'
+app.config['SESSION_TYPE'] = 'filesystem'
+
 
 
 
@@ -95,11 +98,10 @@ def upload_file():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-if __name__ == '__main__':
-    app.secret_key = 'super secret key'
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
 
 
 
