@@ -51,4 +51,5 @@ Or kidney is too small in image, please zoom in to the kidney.
 4. Optimal: Well done/good work for obtaining optimal image quality of the kidney. 
 
 
-5. Wrong: The image acquired is of the wrong organ. Please refer to Moodle MBBS Clinical Skills Platform under Radiological, Ultrasound Section IIC 7.1, where there is a video demonstrating how to perform and acquire image of the kidney using ultrasound. https://moodle.hku.hk/mod/page/view.php?id=2748898
+5. Wrong: The image acquired is of the wrong organ. Please refer to Moodle MBBS Clinical Skills Platform under Radiological, Ultrasound Section IIC 7.1, where there is a video demonstrating how to perform and acquire image of the kidney using ultrasound. https://moodle.hku.hk/mod/page/view.php?id=2748898"# US_Project" 
+"# US_Project" 
