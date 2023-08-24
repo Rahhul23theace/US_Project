@@ -1,64 +1,98 @@
 
 
 
+
+
+
+
+
 import openai
 import os
+import requests
+import json
 from dotenv import load_dotenv, find_dotenv
+
 _ = load_dotenv(find_dotenv())
 
 
 openai.api_type = os.getenv('api_type')
 openai.api_base = os.getenv('api_base')
 openai.api_version = os.getenv('api_version')
-openai.api_key  = os.getenv('OPENAI_API_KEY')
+openai.api_key = os.getenv('OPENAI_API_KEY')
+
+
+
+
+def get_completion(prompt, engine="chatgpt"):
+    messages = [{"role": "user", "content": prompt}]
+
+    headers = {
+        "Content-Type": "application/json",
+        "api-key": openai.api_key,
+        "Cache-Control": "no-cache"
+    }
+
+    payload = {
+        "model": engine,
+        "messages": messages,
+        "max_tokens": 8000,
+        "temperature": 0.7,
+    }
+
+    response = requests.post('https://api.hku.hk/openai/deployments/chatgpt/chat/completions?api-version=2023-03-15-preview', headers=headers, data=json.dumps(payload))
+    response_data = response.json()
+    return response_data['choices'][0]['message']['content']
+
 
 
 
 def generate_feedback(predicted_classes):
     feedback = []
-
     label_information = '''
 
+1. Artefact:  There are artefacts on the image. These could be due to acoustic shadowing
+from the ribs (having the kidneys in the upper retroperitoneum) or ring-down 
+artefacts from gas bubbles in the colon. If you are interested in reading more on 
+ultrasound artefacts, please refer to explanation on Moodle MBBS Clinical Skills
+Platform under Radiological, Ultrasound Section I 2.3. 
+You can avoid these arfefacts from the ribs by asking the subject to take a deep 
+inspiration, which will lower the diaphragm and hence the position of the kidney away 
+from the ribcage, or by positioning the probe in between the ribs to avoid the artefact. 
+To overcome ring-down artefacts, having the subject fasted will help or gently applying
+pressure to displace the gas away from the area (but sometimes even with these efforts,
+nothing work!). 
 
-1. Artefact: This label refers to ultrasound images where unwanted artifacts are present, affecting the overall image quality.
- Artifacts can result from various factors, such as acoustic shadows, reverberations, or other distortions. In the context of kidney ultrasound images, these artifacts may hinder proper assessment of the kidney's structure and function.
+2. Incorrect Gain/Inappropriate gain:  The image is either too "bright" or too "dark". 
+The Gain controls the brightness of the image (see Moodle MBBS Clinical Skills Platform 
+under Radiological, Ultrasound Section I 3.5). Another good reference for explanation can 
+be found on:
 
- 
-2. Incorrect Gain: The "Incorrect_Gain" label is assigned to ultrasound images where the gain settings are not properly adjusted.
- Gain refers to the amplification of the returning ultrasound signals, which affects the brightness of the image. When the gain is either too high or too low, it can lead to over- or under-exposure of the image, making it difficult to accurately evaluate the kidney's condition.
+ https://123sonography.com/blog/ultrasound-101-part-5-gain-and-time-gain-compensation#:~:text=What%20is%20gain%3F,much%20each%20echo%20is%20amplified.
 
-3. Incorrect Position: Images labeled as "Incorrect_Position" are those where the ultrasound probe or patient's positioning is not 
-optimal for capturing a clear and accurate image of the kidney. Proper positioning is crucial for obtaining high-quality ultrasound images, as it ensures that the ultrasound beam is appropriately aligned with the target anatomy. Inaccurate positioning may result in poor visualization of the kidney or the inclusion of irrelevant structures in the image.
+3. Incorrect Position/ Suboptimal positioning: The organ of interest, i.e. kidney, 
+is not correctly positioned in the captured imaged. It is not centrally placed or 
+incompletely imaged (cut-off, cropped). Having the subject in decubitus position helps 
+to get good access to image the kidney as explained in the video on Moodle MBBS Clinical
+Skills Platform under Radiological, Ultrasound Section IIC 7.1. If this is not possible, 
+then try positioning the probe anteriorly and posteriorly to find an ideal view of the
+kidney maybe required as every subject is different. 
 
+4. Optimal: Well done/good work for obtaining optimal image quality of the kidney. 
 
-4. Optimal: The "Optimal" label is given to ultrasound images that exhibit high quality and are free from any significant artifacts, 
-positioning errors, or gain issues. These images provide a clear and accurate representation of the kidney, allowing for precise assessment of its structure and function. Such images are ideal for medical professionals to use when evaluating a patient's kidney health.
+5. Wrong: The image acquired is of the wrong organ. Please refer to Moodle MBBS Clinical 
+Skills Platform under Radiological, Ultrasound Section IIC 7.1, where there is a video
+demonstrating how to perform and acquire image of the kidney using ultrasound:
 
-5. Wrong: The "Wrong" label is assigned to ultrasound images where the captured anatomy is not the intended kidney or the image
- is of an entirely different organ or body part. This may occur if the ultrasound probe is placed incorrectly or if the operator is not familiar with the correct scanning technique for kidney imaging. Images with this label are not suitable for kidney quality evaluation, as they do not accurately represent the target organ.
+https://moodle.hku.hk/mod/page/view.php?id=2748898
 
 '''
-
     for prediction in predicted_classes:
         feedback_for_prediction = []
         labels = prediction.split(", ")
+        prompt = f"{label_information}\n\nBased on the above information, please provide feedback for an ultrasound image with the following characteristics: {', '.join(labels)}.Also check if url link is provided for particular.If link is there, provide the link along with generated for that particular label.\n Please provide a creative response while maintaining an academic tone and factual information."
 
-        prompt = f"{label_information}\nBased on the above information, please provide feedback for an ultrasound image with the following characteristics: "
-        prompt += ", ".join(labels)
-
-        response = openai.Completion.create(
-            engine="chatgpt-4",
-            prompt=prompt,
-            temperature=0.7,
-            max_tokens=100,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0,
-            n=1,
-            stop=None,
-        )
-
-        feedback_text = response.choices[0].text.strip()
+        response_text = get_completion(prompt)
+        feedback_text = response_text.strip()
         feedback_for_prediction.append(feedback_text)
         feedback.append(feedback_for_prediction)
 
@@ -66,14 +100,21 @@ positioning errors, or gain issues. These images provide a clear and accurate re
 
 
 
+############################ EXAMPLE    #############################
 
 
+""" 
 
-
-predicted_classes = ["Artefact", "Incorrect_Gain", "Optimal"]
+predicted_classes = ["Artefact", "Incorrect Gain", "Optimal"]
 feedback = generate_feedback(predicted_classes)
 
 for i, fb in enumerate(feedback):
     print(f"Feedback for prediction {i + 1}:")
     print(fb[0])
     print()
+ """
+
+
+
+
+

@@ -12,7 +12,8 @@ import os
 import torch
 import torch.nn as nn
 from torchvision import transforms, models
-from util import load_models, ensemble_prediction, load_image_from_file, generate_feedback
+from util import load_models, ensemble_prediction, load_image_from_file
+from genAI_feedback import generate_feedback
 
 
 
@@ -32,6 +33,9 @@ app.config['SESSION_TYPE'] = 'filesystem'
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -74,13 +78,13 @@ def upload_file():
                 class_labels = ['Artefact', 'Incorrect_Gain', 'Incorrect_Position', 'Optimal', 'Wrong']
 
                 predicted_labels = (outputs > 0.5).squeeze().detach().cpu().numpy().astype(int)
-
                 if sum(predicted_labels) == 0:
-                    top_two_prob_indices = outputs.squeeze().detach().cpu().numpy().argsort()[-2:][::-1]
-                    predicted_label = f"Top 2 {class_labels[top_two_prob_indices[0]]} {round(outputs.squeeze()[top_two_prob_indices[0]].item(), 3)} {class_labels[top_two_prob_indices[1]]} {round(outputs.squeeze()[top_two_prob_indices[1]].item(), 3)}"
+                    top_prob_index = outputs.squeeze().detach().cpu().numpy().argmax()
+                    predicted_label = f"{class_labels[top_prob_index]}"
                 else:
                     predicted_label = ", ".join([class_labels[i] for i in range(len(predicted_labels)) if predicted_labels[i] == 1])
-                    predicted_classes.append(predicted_label)
+
+                predicted_classes.append(predicted_label)
 
                 predicted_label = predicted_label.replace(" ", "_")
                 filename = secure_filename(f"{name}_{scholar_id}_{predicted_label}_{file.filename}")
