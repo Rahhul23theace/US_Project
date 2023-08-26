@@ -8,5 +8,5 @@ gunicorn
 Pillow==9.0.1
 
 requests
-json
+
 numpy
