@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'UltraSound1'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7A4FFCBCAB8E4AAC96A33A9EAD5FED6D }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_01378B7760D2498DAC90EBFF3A43C2D4 }}
