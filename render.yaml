@@ -1,7 +1,0 @@
-services:
-  - type: web
-    buildCommand: |
-      python -m pip install --upgrade pip
-      pip install -r requirements.txt
-    env: python 3
-    startCommand: python app.py
