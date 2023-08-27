@@ -12,8 +12,9 @@ import os
 import torch
 import torch.nn as nn
 from torchvision import transforms, models
-from util import load_models, ensemble_prediction, load_image_from_file
-from genAI_feedback import generate_feedback
+from util import load_models, ensemble_prediction, load_image_from_file, generate_feedback
+
+#from genAI_feedback import generate_feedback
 
 
 
@@ -103,11 +104,8 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
-
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8000)
-
-
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8000)))
 
 
 
