@@ -71,6 +71,14 @@ def upload_file():
                 ])
                 image = load_image_from_file(file, transform=data_transforms)
 
+                try:
+                    model_1, model_2 = load_models("resnet50.pt", "resnext50_32x4d.pt")
+                    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                    inputs = image.unsqueeze(0).to(device)
+                    outputs = ensemble_prediction(model_1, model_2, inputs)
+                except Exception as e:
+                    app.logger.error(f"Error in model loading or prediction: {str(e)}")
+
                 model_1, model_2 = load_models("resnet50.pt", "resnext50_32x4d.pt")
                 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
                 inputs = image.unsqueeze(0).to(device)
