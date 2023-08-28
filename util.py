@@ -33,9 +33,8 @@ def load_models(model_path_1, model_path_2):
         nn.Sigmoid()
     )
 
-    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # Use CPU for model loading and inference
-    device = torch.device("cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
     model_1 = model_1.to(device)
     model_1.load_state_dict(torch.load(model_path_1))
